@@ -1,7 +1,7 @@
 ---
 python_version: 3.11.10
 title: CineDiffusion
-emoji: 🖼
+emoji: 🎥
 colorFrom: purple
 colorTo: red
 sdk: gradio
