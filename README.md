@@ -1,14 +1,14 @@
 ---
+python_version: 3.11.10
 title: CineDiffusion
-emoji: 🦀
+emoji: 🖼
 colorFrom: purple
-colorTo: gray
+colorTo: red
 sdk: gradio
 sdk_version: 5.6.0
 app_file: app.py
 pinned: false
-license: mit
-short_description: CineDiffusion is an application for creating very high resol
+license: apache-2.0
 ---
 
 Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference

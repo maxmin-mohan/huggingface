@@ -1,0 +1,208 @@
+import gradio as gr
+import numpy as np
+# import random  # Removed unused import
+import spaces
+import torch
+from diffusers import DiffusionPipeline
+from numpy.random import PCG64DXSM, Generator  # Add Generator import
+from typing import Tuple, Any
+
+dtype: torch.dtype = torch.bfloat16
+device: str = "cuda" if torch.cuda.is_available() else "cpu"
+MAX_SEED = np.iinfo(np.int32).max
+rng = Generator(PCG64DXSM())  # Create a Generator instance instead of using PCG64DXSM directly
+
+pipe = DiffusionPipeline.from_pretrained("shuttleai/shuttle-3-diffusion", torch_dtype=dtype).to(device)
+# Enable VAE tiling
+pipe.vae.enable_tiling()
+
+# Define cinematic aspect ratios
+ASPECT_RATIOS = {
+    "2.39:1 (Modern Widescreen)": 2.39,
+    "2.76:1 (Ultra Panavision 70)": 2.76,
+    "3.00:1 (Experimental Ultra-wide)": 3.00,
+    "4.00:1 (Polyvision)": 4.00,
+    "2.55:1 (CinemaScope)": 2.55,
+    "2.20:1 (Todd-AO)": 2.20
+}
+
+MIN_WIDTH = 512
+MAX_WIDTH = 3072
+STANDARD_WIDTH = 2048
+STEP_WIDTH = 8
+STYLE_PROMPT = "hyperrealistic widescreen cinematic still shallow depth vignette high budget bokeh film grain dramatic lighting epic composition moody detailed wide shot atmospheric backlit soft light, "
+
+def calculate_height(width: int, aspect_ratio: float) -> int:
+    height = int(width / aspect_ratio)
+    return (height // 8) * 8
+
+# Pre-calculate height mappings for common widths
+HEIGHT_CACHE = {}
+for ratio_name, ratio in ASPECT_RATIOS.items():
+    HEIGHT_CACHE[ratio_name] = {
+        width: calculate_height(width, ratio)
+        for width in range(MIN_WIDTH, MAX_WIDTH + 1, STEP_WIDTH)
+    }
+
+def validate_aspect_ratio(ratio_name: str) -> float | None:
+    match ratio_name:
+        case "2.39:1 (Modern Widescreen)":
+            return 2.39
+        case "2.76:1 (Ultra Panavision 70)":
+            return 2.76
+        case "3.00:1 (Experimental Ultra-wide)":
+            return 3.00
+        case "4.00:1 (Polyvision)":
+            return 4.00
+        case "2.55:1 (CinemaScope)":
+            return 2.55
+        case "2.20:1 (Todd-AO)":
+            return 2.20
+        case _:
+            return None
+
+@spaces.GPU()
+def infer(
+    prompt: str,
+    aspect_ratio: str,
+    width: int,
+    seed: int = 42,
+    randomize_seed: bool = False,
+    num_inference_steps: int = 4,
+    progress: Any = gr.Progress(track_tqdm=True)
+) -> Tuple[Any, int]:
+    # Prepend style prompt to user input
+    FULL_PROMPT = f"{STYLE_PROMPT} {prompt}"
+    
+    if randomize_seed:
+        seed = int(rng.integers(0, MAX_SEED))
+    
+    ratio = validate_aspect_ratio(aspect_ratio)
+    if ratio is None:
+        raise ValueError(f"Invalid aspect ratio: {aspect_ratio}")
+        
+    generator = torch.Generator().manual_seed(seed)
+    height = HEIGHT_CACHE[aspect_ratio][width]
+    
+    image = pipe(
+        prompt=FULL_PROMPT,  # Use the combined prompt
+        width=width,
+        height=height,
+        num_inference_steps=num_inference_steps,
+        generator=generator,
+        max_sequence_length=256
+    ).images[0]
+    return image, seed
+
+examples = [
+    # Taxi Driver
+    [
+        "This gripping frame captures a close-up of a man, his face illuminated by the harsh red glow of city lights, evoking a mood of unease and introspection. His expression is intense and unreadable, with a hint of brooding menace. The dark, blurred background suggests a bustling urban night, with neon lights flickering faintly, emphasizing the gritty, isolating atmosphere. The contrast between the man’s rugged features and the vibrant red lighting highlights the tension and internal conflict likely central to the scene, immersing the viewer in the character’s psychological state.",  # prompt
+        "2.39:1 (Modern Widescreen)",  # aspect_ratio
+        2048,  # width
+        0,  # seed
+        False,  # randomize_seed
+        4,  # num_inference_steps
+    ],
+    # Leon The Professional
+    [
+        "This tightly framed shot focuses on the reflective lenses of round sun glasses, worn by a figure with weathered skin. The reflections in the glasses reveal a table with cups and hands mid-gesture, suggesting an intense, unseen discussion or ritual taking place. The muted tones and soft lighting enhance the intimate and mysterious mood, drawing attention to the details of the reflections. The perspective feels voyeuristic, as if glimpsing a private moment through the character’s point of view. This evocative close-up emphasizes themes of observation, secrecy, and layered meaning within the narrative.",
+        "2.76:1 (Ultra Panavision 70)",
+        2048,
+        1744078352,
+        False,
+        4,
+    ],
+    # Lawrence of Arabia
+    [
+        "three individuals on camels traversing a vast, sunlit desert. The golden sand stretches endlessly in the foreground, interrupted by the striking presence of dark, rugged mountains in the background, bathed in warm sunlight. The composition emphasizes the isolation and majesty of the desert landscape, with the figures casting long shadows that add depth to the scene. The muted blue sky contrasts beautifully with the earthy tones, creating a balanced and immersive visual. The moment conveys a sense of adventure, introspection, and the timeless allure of the natural world.",
+        "2.20:1 (Todd-AO)",
+        2048,
+        0,
+        False,
+        4,
+    ],
+]
+
+css="""
+#col-container {
+    margin: 0 auto;
+    max-width: 100%;
+}
+"""
+
+with gr.Blocks(css=css) as demo:
+    
+    with gr.Column(elem_id="col-container"):
+        gr.Markdown(f"""# CineDiffusion
+CineDiffusion is an application for creating very high resolution Cinematic widescreen images based on historical standard cinema widescreen aspect ratios.
+        """)
+        
+        with gr.Row():
+            
+            prompt = gr.Text(
+                label="Prompt",
+                show_label=False,
+                max_lines=1,
+                placeholder="Enter your prompt",
+                container=False,
+            )
+            
+            run_button = gr.Button("Run", scale=0)
+        
+        result = gr.Image(label="Result", show_label=False, width="100%")
+
+        with gr.Row():
+            aspect_ratio = gr.Dropdown(
+                    label="Aspect Ratio",
+                    choices=list(ASPECT_RATIOS.keys()),
+                    value="2.39:1 (Modern Widescreen)"
+                )
+        
+        with gr.Accordion("Advanced Settings", open=False):
+            
+            seed = gr.Slider(
+                label="Seed",
+                minimum=0,
+                maximum=MAX_SEED,
+                step=1,
+                value=0,
+            )
+            
+            randomize_seed = gr.Checkbox(label="Randomize seed", value=True)
+            
+            with gr.Row():
+                
+                width = gr.Slider(
+                    label="Width",
+                    minimum=MIN_WIDTH,
+                    maximum=MAX_WIDTH,
+                    step=STEP_WIDTH,
+                    value=STANDARD_WIDTH,
+                )
+            
+            num_inference_steps = gr.Slider(
+                label="Number of inference steps",
+                minimum=1,
+                maximum=50,
+                step=1,
+                value=4,
+            )
+        
+        gr.Examples(
+            examples=examples,
+            fn=infer,
+            inputs=[prompt, aspect_ratio, width, seed, randomize_seed, num_inference_steps],
+            outputs=[result, seed],
+            cache_examples=True,
+            cache_mode="lazy"
+        )
+
+    gr.on(
+        triggers=[run_button.click, prompt.submit],
+        fn=infer,
+        inputs=[prompt, aspect_ratio, width, seed, randomize_seed, num_inference_steps],
+        outputs=[result, seed]
+    )
+
+demo.launch()
