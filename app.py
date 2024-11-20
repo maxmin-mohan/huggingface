@@ -4,13 +4,12 @@ import numpy as np
 import spaces
 import torch
 from diffusers import DiffusionPipeline
-from numpy.random import PCG64DXSM, Generator  # Add Generator import
+from numpy.random import PCG64DXSM, Generator, SeedSequence
 from typing import Tuple, Any
 
 dtype: torch.dtype = torch.bfloat16
 device: str = "cuda" if torch.cuda.is_available() else "cpu"
-MAX_SEED = np.iinfo(np.int32).max
-rng = Generator(PCG64DXSM())  # Create a Generator instance instead of using PCG64DXSM directly
+MAX_SEED = np.iinfo(np.int64).max
 
 pipe = DiffusionPipeline.from_pretrained("shuttleai/shuttle-3-diffusion", torch_dtype=dtype).to(device)
 # Enable VAE tiling
@@ -61,6 +60,13 @@ def validate_aspect_ratio(ratio_name: str) -> float | None:
         case _:
             return None
 
+# Replace the single rng instance with a function that creates a fresh generator each time
+def get_random_seed() -> int:
+    # Create a new generator with a random seed each time
+    ss = SeedSequence()
+    rng = Generator(PCG64DXSM(ss))
+    return int(rng.integers(0, MAX_SEED))
+
 @spaces.GPU()
 def infer(
     prompt: str,
@@ -75,7 +81,7 @@ def infer(
     FULL_PROMPT = f"{STYLE_PROMPT} {prompt}"
     
     if randomize_seed:
-        seed = int(rng.integers(0, MAX_SEED))
+        seed = get_random_seed()
     
     ratio = validate_aspect_ratio(aspect_ratio)
     if ratio is None:
