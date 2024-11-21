@@ -8,11 +8,13 @@ from typing import Tuple, Any
 
 dtype: torch.dtype = torch.bfloat16
 device: str = "cuda" if torch.cuda.is_available() else "cpu"
-MAX_SEED = np.iinfo(np.int64).max
+
 
 pipe = DiffusionPipeline.from_pretrained("shuttleai/shuttle-3-diffusion", torch_dtype=dtype).to(device)
 # Enable VAE tiling
 pipe.vae.enable_tiling()
+# Enable memory efficient attention
+pipe.enable_xformers_memory_efficient_attention()
 
 # Define cinematic aspect ratios
 ASPECT_RATIOS = {
@@ -29,7 +31,7 @@ ASPECT_RATIOS = {
     "1.43:1 (IMAX 70mm)": 1.43,
     "2.40:1 (Modern Anamorphic)": 2.40
 }
-
+MAX_SEED = np.iinfo(np.int64).max
 MIN_WIDTH = 512
 MAX_WIDTH = 3072
 STANDARD_WIDTH = 2048
