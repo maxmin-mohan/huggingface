@@ -5,3 +5,4 @@ torch
 transformers
 xformers
 sentencepiece
+pip==24.3.1
