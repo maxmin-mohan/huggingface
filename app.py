@@ -94,6 +94,7 @@ def infer(
         height=height,
         num_inference_steps=num_inference_steps,
         generator=generator,
+        guidance_scale=3.5,
         max_sequence_length=256
     ).images[0]
     return image, seed
