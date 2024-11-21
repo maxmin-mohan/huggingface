@@ -200,7 +200,8 @@ CineDiffusion is an application for creating very high resolution Cinematic wide
             fn=infer,
             inputs=[prompt, aspect_ratio, width, seed, randomize_seed, num_inference_steps],
             outputs=[result, seed],
-            cache_examples="lazy"
+            cache_examples=True,
+            cache_mode="lazy"
         )
 
     gr.on(
@@ -210,4 +211,4 @@ CineDiffusion is an application for creating very high resolution Cinematic wide
         outputs=[result, seed]
     )
 
-demo.launch()
+demo.launch(ssr_mode = False)
