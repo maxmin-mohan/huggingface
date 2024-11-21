@@ -71,7 +71,7 @@ def infer(
 ) -> Tuple[Any, int]:
     # Prepend style prompt to user input
     FULL_PROMPT = f"{STYLE_PROMPT} {prompt}"
-    print(f"Generating image with prompt: {FULL_PROMPT}")
+    # print(f"Generating image with prompt: {FULL_PROMPT}")
     
     if randomize_seed:
         seed = get_random_seed()
