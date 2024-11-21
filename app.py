@@ -37,7 +37,7 @@ MIN_WIDTH = 512
 MAX_WIDTH = 3072
 STANDARD_WIDTH = 2048
 STEP_WIDTH = 8
-STYLE_PROMPT = "hyperrealistic widescreen cinematic still shallow depth vignette high budget bokeh film grain dramatic lighting epic composition moody detailed wide shot atmospheric backlit soft light, "
+STYLE_PROMPT = "hyperrealistic widescreen anamorphic cinematic still vignette  bokeh film grain dramatic lighting epic composition moody detailed super wide shot atmospheric backlit soft light, "
 
 def calculate_height(width: int, aspect_ratio: float) -> int:
     height = int(width / aspect_ratio)
