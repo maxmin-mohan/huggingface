@@ -71,6 +71,7 @@ def infer(
 ) -> Tuple[Any, int]:
     # Prepend style prompt to user input
     FULL_PROMPT = f"{STYLE_PROMPT} {prompt}"
+    print(f"Generating image with prompt: {FULL_PROMPT}")
     
     if randomize_seed:
         seed = get_random_seed()
@@ -81,6 +82,9 @@ def infer(
         
     generator = torch.Generator().manual_seed(seed)
     height = HEIGHT_CACHE[aspect_ratio][width]
+    # Calculate megapixel count
+    MEGAPIXEL_COUNT = (width * height) / 1000000
+    print(f"Generating {MEGAPIXEL_COUNT} megapixel image.")
     
     image = pipe(
         prompt=FULL_PROMPT,  # Use the combined prompt
