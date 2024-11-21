@@ -13,9 +13,7 @@ device: str = "cuda" if torch.cuda.is_available() else "cpu"
 pipe = DiffusionPipeline.from_pretrained("shuttleai/shuttle-3-diffusion", torch_dtype=dtype).to(device)
 # Enable VAE tiling
 pipe.vae.enable_tiling()
-# Only enable xformers memory efficient attention when using CUDA
-if device == "cuda":
-    pipe.enable_xformers_memory_efficient_attention()
+
 
 # Define cinematic aspect ratios
 ASPECT_RATIOS = {
