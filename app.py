@@ -11,8 +11,8 @@ device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 pipe = DiffusionPipeline.from_pretrained("shuttleai/shuttle-3-diffusion", torch_dtype=dtype).to(device)
-# trigger_word = "Ultra realistic"
-# pipe.load_lora_weights("prithivMLmods/Canopus-LoRA-Flux-UltraRealism-2.0")
+trigger_word = "CNSTLL"
+pipe.load_lora_weights("adirik/flux-cinestill")
 # Enable VAE tiling
 pipe.vae.enable_tiling()
 
@@ -37,7 +37,7 @@ MIN_WIDTH = 512
 MAX_WIDTH = 3072
 STANDARD_WIDTH = 2048
 STEP_WIDTH = 8
-STYLE_PROMPT = "hyperrealistic widescreen anamorphic cinematic still vignette  bokeh film grain dramatic lighting epic composition moody detailed super wide shot atmospheric backlit soft light, "
+STYLE_PROMPT = "analog film, high resolution, cinestill 800t, hyperrealistic, widescreen, anamorphic, vignette, bokeh, film grain, dramatic lighting, epic composition, moody, detailed, super wide shot, atmospheric, backlit, soft light,  "
 
 def calculate_height(width: int, aspect_ratio: float) -> int:
     height = int(width / aspect_ratio)
