@@ -22,7 +22,13 @@ ASPECT_RATIOS = {
     "3.00:1 (Experimental Ultra-wide)": 3.00,
     "4.00:1 (Polyvision)": 4.00,
     "2.55:1 (CinemaScope)": 2.55,
-    "2.20:1 (Todd-AO)": 2.20
+    "2.20:1 (Todd-AO)": 2.20,
+    "2.00:1 (Univisium)": 2.00,
+    "2.35:1 (Anamorphic Scope)": 2.35,
+    "2.59:1 (MGM Camera 65)": 2.59,
+    "1.75:1 (IMAX Digital)": 1.75,
+    "1.43:1 (IMAX 70mm)": 1.43,
+    "2.40:1 (Modern Anamorphic)": 2.40
 }
 
 MIN_WIDTH = 512
@@ -44,21 +50,7 @@ for ratio_name, ratio in ASPECT_RATIOS.items():
     }
 
 def validate_aspect_ratio(ratio_name: str) -> float | None:
-    match ratio_name:
-        case "2.39:1 (Modern Widescreen)":
-            return 2.39
-        case "2.76:1 (Ultra Panavision 70)":
-            return 2.76
-        case "3.00:1 (Experimental Ultra-wide)":
-            return 3.00
-        case "4.00:1 (Polyvision)":
-            return 4.00
-        case "2.55:1 (CinemaScope)":
-            return 2.55
-        case "2.20:1 (Todd-AO)":
-            return 2.20
-        case _:
-            return None
+    return ASPECT_RATIOS.get(ratio_name)
 
 # Replace the single rng instance with a function that creates a fresh generator each time
 def get_random_seed() -> int:
@@ -140,8 +132,8 @@ css="""
 with gr.Blocks(css=css) as demo:
     
     with gr.Column(elem_id="col-container"):
-        gr.Markdown(f"""# CineDiffusion
-CineDiffusion is an application for creating very high resolution Cinematic widescreen images based on historical standard cinema widescreen aspect ratios.
+        gr.Markdown(f"""# CineDiffusion 🎥
+**CineDiffusion** creates cinema-quality widescreen images at up to **4.2 Megapixels** — *4x higher resolution* than typical AI image generators (1MP). Features authentic cinematic aspect ratios for true widescreen results.
         """)
         
         with gr.Row():
