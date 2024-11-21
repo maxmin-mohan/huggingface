@@ -1,5 +1,5 @@
 accelerate
-diffusers
+diffusers==5.6.0
 invisible_watermark
 torch
 transformers
