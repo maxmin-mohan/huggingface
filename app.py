@@ -1,6 +1,5 @@
 import gradio as gr
 import numpy as np
-# import random  # Removed unused import
 import spaces
 import torch
 from diffusers import DiffusionPipeline
