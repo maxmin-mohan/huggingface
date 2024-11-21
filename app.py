@@ -11,8 +11,8 @@ device: str = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 pipe = DiffusionPipeline.from_pretrained("shuttleai/shuttle-3-diffusion", torch_dtype=dtype).to(device)
-trigger_word = "Ultra realistic"
-pipe.load_lora_weights("prithivMLmods/Canopus-LoRA-Flux-UltraRealism-2.0")
+# trigger_word = "Ultra realistic"
+# pipe.load_lora_weights("prithivMLmods/Canopus-LoRA-Flux-UltraRealism-2.0")
 # Enable VAE tiling
 pipe.vae.enable_tiling()
 
