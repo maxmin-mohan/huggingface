@@ -66,7 +66,7 @@ def infer(
     prompt: str,
     aspect_ratio: str,
     width: int,
-    seed: int = 42,
+    seed: Any = 42,  # Change type hint to Any to handle both string and int inputs
     randomize_seed: bool = False,
     num_inference_steps: int = 4,
     progress: Any = gr.Progress(track_tqdm=True)
