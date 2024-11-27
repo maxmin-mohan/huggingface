@@ -149,7 +149,7 @@ with gr.Blocks(css=css) as demo:
                 label="Prompt",
                 show_label=False,
                 placeholder="Enter your prompt",
-                container=False,
+                container=True,
             )
             
             run_button = gr.Button("Run", scale=0)
