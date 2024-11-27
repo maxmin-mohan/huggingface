@@ -148,7 +148,6 @@ with gr.Blocks(css=css) as demo:
             prompt = gr.Text(
                 label="Prompt",
                 show_label=False,
-                max_lines=1,
                 placeholder="Enter your prompt",
                 container=False,
             )
