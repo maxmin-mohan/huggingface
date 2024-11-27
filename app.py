@@ -157,7 +157,12 @@ with gr.Blocks(css=css) as demo:
             
             run_button = gr.Button("Run", scale=0)
         
-        result = gr.Image(label="Result", show_label=False, width="100%")
+        result = gr.Image(
+            label="Result", 
+            show_label=False, 
+            width="100%",
+            type="pil",
+            )
 
         with gr.Row():
             aspect_ratio = gr.Dropdown(
