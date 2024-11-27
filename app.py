@@ -77,6 +77,9 @@ def infer(
     
     if randomize_seed:
         seed = get_random_seed()
+    else:
+        # Convert seed to int if it's a string
+        seed = int(seed)
     
     ratio = validate_aspect_ratio(aspect_ratio)
     if ratio is None:
