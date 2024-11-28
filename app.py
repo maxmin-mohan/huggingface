@@ -103,6 +103,15 @@ def infer(
     return image, seed
 
 examples = [
+    # Rocket Car
+    [
+        "NOT PANORAMIC, NOT MIRRORED. a rocket car going across the bonneville salt flats, the image is blurred to show the immense speed.", # prompt
+        "4.00:1 (Polyvision)", # aspect_ratio
+        3072, # width   
+        8299210943349724000, # seed
+        False, # randomize_seed
+        4, # num_inference_steps
+    ],
     # Taxi Driver
     [
         "This gripping frame captures a close-up of a man, his face illuminated by the harsh red glow of city lights, evoking a mood of unease and introspection. His expression is intense and unreadable, with a hint of brooding menace. The dark, blurred background suggests a bustling urban night, with neon lights flickering faintly, emphasizing the gritty, isolating atmosphere. The contrast between the man’s rugged features and the vibrant red lighting highlights the tension and internal conflict likely central to the scene, immersing the viewer in the character’s psychological state.",  # prompt
