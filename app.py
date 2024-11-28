@@ -133,6 +133,28 @@ examples = [
 ]
 
 css="""
+body {
+    background-image: url('https://huggingface.co/spaces/takarajordan/CineDiffusion/resolve/main/static/background.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
+gradio-app {
+    background: none !important;
+}
+
+.md h1 {
+    color: white !important;
+}
+
+
+.gradio-container {
+    background-color: transparent;
+}
+
 #col-container {
     margin: 0 auto;
     max-width: 100%;
