@@ -146,13 +146,12 @@ gradio-app {
     background: none !important;
 }
 
-.md h1 {
-    color: white !important;
+.gradio-container {
+    background-color: white;
 }
 
-
-.gradio-container {
-    background-color: transparent;
+.dark .gradio-container {
+    background-color: #121212;
 }
 
 #col-container {
