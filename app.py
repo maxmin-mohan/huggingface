@@ -108,7 +108,7 @@ examples = [
         "NOT PANORAMIC, NOT MIRRORED. a rocket car going across the bonneville salt flats, the image is blurred to show the immense speed.", # prompt
         "4.00:1 (Polyvision)", # aspect_ratio
         3072, # width   
-        8299210943349724000, # seed
+        23, # seed
         False, # randomize_seed
         4, # num_inference_steps
     ],
